@@ -1,15 +1,24 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Rajdhani, Playfair_Display, Roboto_Mono } from "next/font/google";
+import { TRPCReactProvider } from "@/trpc/client";
+import { Toaster } from "sonner";
+
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fontSans = Rajdhani({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
+  variable: "--font-sans",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const fontSerif = Playfair_Display({
   subsets: ["latin"],
+  variable: "--font-serif",
+});
+
+const fontMono = Roboto_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -24,10 +33,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}>
+        <TRPCReactProvider>
+          {children}
+          <Toaster />
+        </TRPCReactProvider>
       </body>
     </html>
   );

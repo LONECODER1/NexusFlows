@@ -1,0 +1,184 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+  workflows     Workflow[]
+  credentials   Credential[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  @@map("verification")
+}
+
+model Credential {
+  id String @id @default(cuid())
+  name String
+  value String
+  type CredentialType
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  Node Node[]
+}
+
+enum CredentialType {
+  OPENAI
+  ANTHROPIC
+  GEMINI
+}
+
+model Workflow {
+  id String @id @default(cuid())
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  nodes Node[]
+  connections Connection[]
+  executions Execution[]
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum NodeType {
+  INITIAL
+  MANUAL_TRIGGER
+  HTTP_REQUEST
+  GOOGLE_FORM_TRIGGER
+  STRIPE_TRIGGER
+  ANTHROPIC
+  GEMINI
+  OPENAI
+  DISCORD
+  SLACK
+}
+
+model Node {
+  id String @id @default(cuid())
+  workflowId String
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  name String
+  type NodeType
+  position Json
+  data Json @default("{}")
+
+  credentialId String?
+  credential Credential? @relation(fields: [credentialId], references: [id])
+
+  outputConnections Connection[] @relation("FromNode")
+  inputConnections Connection[] @relation("ToNode")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Connection {
+  id String @id @default(cuid())
+  workflowId String
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  fromNodeId String
+  fromNode Node @relation("FromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNodeId String
+  toNode Node @relation("ToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  fromOutput String @default("main")
+  toInput String @default("main")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([fromNodeId, toNodeId, fromOutput, toInput])
+}
+
+enum ExecutionStatus {
+  RUNNING
+  SUCCESS
+  FAILED
+}
+
+model Execution {
+  id String @id @default(cuid())
+
+  workflowId String
+  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  status ExecutionStatus @default(RUNNING)
+  error String? @db.Text
+  errorStack String? @db.Text
+
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+
+  inngestEventId String @unique
+
+  output Json?
+}
