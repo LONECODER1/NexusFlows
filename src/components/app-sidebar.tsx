@@ -21,6 +21,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
+    SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscription";
@@ -56,14 +57,17 @@ export const AppSidebar = () => {
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
-                <SidebarMenuItem>
-                    <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
-                        <Link href="/" prefetch>
-                            <Image src="/logos/logo.svg" alt="Nodebase" width={30} height={30} />
-                            <span className="font-semibold text-sm">Nodebase</span>
-                        </Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
+                <SidebarMenu>
+                    <SidebarMenuItem className="flex items-center justify-between">
+                        <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
+                            <Link href="/" prefetch>
+                                <Image src="/logos/logo.svg" alt="Nodebase" width={30} height={30} />
+                                <span className="font-semibold text-sm">Nodebase</span>
+                            </Link>
+                        </SidebarMenuButton>
+                        <SidebarTrigger />
+                    </SidebarMenuItem>
+                </SidebarMenu>
             </SidebarHeader>
             <SidebarContent>
                 {menuItems.map((group) => (

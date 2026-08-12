@@ -11,7 +11,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.36",
     "@ai-sdk/google": "^4.0.24",
+    "@ai-sdk/openai": "^4.0.37",
     "@base-ui/react": "^1.6.0",
     "@hookform/resolvers": "^5.4.0",
     "@inngest/realtime": "^0.4.6",
@@ -45,7 +47,7 @@
     "clsx": "^2.1.1",
     "cryptr": "^6.4.0",
     "handlebars": "^4.7.9",
-    "inngest": "^4.13.0",
+    "inngest": "^3.42.3",
     "ky": "^2.0.2",
     "lucide-react": "^1.25.0",
     "next": "15.5.4",
