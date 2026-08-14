@@ -17,13 +17,14 @@ import {
   Panel,
 } from '@xyflow/react';
 import { ErrorView, LoadingView } from "@/components/entity-components";
-import { useSuspenseWorkflow } from "@/features/workflows/hooks/use-workflows";
+import { useSuspenseWorkflow, useUpdateWorkflow } from "@/features/workflows/hooks/use-workflows";
 
 import '@xyflow/react/dist/style.css';
 import { nodeComponents } from '@/config/node-components';
 import { AddNodeButton } from './add-node-button';
 import { useSetAtom } from 'jotai';
 import { editorAtom } from '../store/atoms';
+import { toWorkflowPayload } from '../hooks/use-save-workflow';
 import { NodeType } from '@/generated/prisma';
 import { ExecuteWorkflowButton } from './execute-workflow-button';
 
@@ -31,8 +32,11 @@ export const EditorLoading = () => {
   return <LoadingView message="Loading editor..." />;
 };
 
-export const EditorError = () => {
-  return <ErrorView message="Error loading editor" />;
+export const EditorError = ({ error }: { error: unknown }) => {
+  const message =
+    error instanceof Error ? error.message : "Unknown editor error";
+
+  return <ErrorView message={`Error loading editor: ${message}`} />;
 };
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
@@ -41,6 +45,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   } = useSuspenseWorkflow(workflowId);
 
   const setEditor = useSetAtom(editorAtom);
+  const updateWorkflow = useUpdateWorkflow();
 
   const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
   const [edges, setEdges] = useState<Edge[]>(workflow.edges);
@@ -54,12 +59,23 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
     [],
   );
   const onConnect = useCallback(
-    (params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-    [],
+    (params: Connection) => {
+      const nextEdges = addEdge(params, edges);
+      setEdges(nextEdges);
+      updateWorkflow.mutate({
+        id: workflowId,
+        ...toWorkflowPayload(nodes, nextEdges),
+      });
+    },
+    [edges, nodes, updateWorkflow, workflowId],
   );
 
-  const hasManualTrigger = useMemo(() => {
-    return nodes.some((node) => node.type === NodeType.MANUAL_TRIGGER);
+  const canExecute = useMemo(() => {
+    return nodes.some(
+      (node) =>
+        node.type === NodeType.MANUAL_TRIGGER ||
+        node.type === NodeType.SCHEDULE_TRIGGER,
+    );
   }, [nodes]);
 
   return (
@@ -85,7 +101,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         <Panel position="top-right">
           <AddNodeButton />
         </Panel>
-        {hasManualTrigger && (
+        {canExecute && (
           <Panel position="bottom-center">
             <ExecuteWorkflowButton workflowId={workflowId} />
           </Panel>

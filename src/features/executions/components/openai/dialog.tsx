@@ -65,7 +65,7 @@ export const OpenAiDialog = ({
   const { 
     data: credentials,
     isLoading: isLoadingCredentials,
-  } = useCredentialsByType(CredentialType.OPENAI);
+  } = useCredentialsByType(CredentialType.OPENAI, open);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

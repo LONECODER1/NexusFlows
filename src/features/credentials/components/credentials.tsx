@@ -9,8 +9,8 @@ import {
     EntityList,
     EntityPagination,
     EntitySearch,
+    EntityListSkeleton,
     ErrorView,
-    LoadingView
 } from "@/components/entity-components";
 import { useRemoveCredential, useSuspenseCredentials } from "../hooks/use-credentials"
 import { useRouter } from "next/navigation";
@@ -19,6 +19,11 @@ import { useEntitySearch } from "@/hooks/use-entity-search";
 import type { Credential } from "@/generated/prisma";
 import { CredentialType } from "@/generated/prisma";
 import Image from "next/image";
+
+type CredentialListItem = Pick<
+    Credential,
+    "id" | "name" | "type" | "createdAt" | "updatedAt"
+>;
 
 export const CredentialsSearch = () => {
     const [params, setParams] = useCredentialsParams();
@@ -38,14 +43,22 @@ export const CredentialsSearch = () => {
 
 export const CredentialsList = () => {
     const credentials = useSuspenseCredentials();
+    const [params, setParams] = useCredentialsParams();
 
     return (
-        <EntityList
-            items={credentials.data.items}
-            getKey={(credential) => credential.id}
-            renderItem={(credential) => <CredentialItem data={credential} />}
-            emptyView={<CredentialsEmpty />}
-        />
+        <>
+            <EntityList
+                items={credentials.data.items}
+                getKey={(credential) => credential.id}
+                renderItem={(credential) => <CredentialItem data={credential} />}
+                emptyView={<CredentialsEmpty />}
+            />
+            <EntityPagination
+                totalPages={credentials.data.totalPages}
+                page={credentials.data.page}
+                onPageChange={(page) => setParams({ ...params, page })}
+            />
+        </>
     );
 };
 
@@ -53,24 +66,10 @@ export const CredentialsHeader = ({ disabled }: { disabled?: boolean }) => {
     return (
         <EntityHeader
             title="Credentials"
-            description="Create and manage your credentials"
+            description="Securely store API keys and service connections"
             newButtonHref="/credentials/new"
             newButtonLabel="New credential"
             disabled={disabled}
-        />
-    );
-};
-
-export const CredentialsPagination = () => {
-    const credentials = useSuspenseCredentials();
-    const [params, setParams] = useCredentialsParams();
-
-    return (
-        <EntityPagination
-            disabled={credentials.isFetching}
-            totalPages={credentials.data.totalPages}
-            page={credentials.data.page}
-            onPageChange={(page) => setParams({ ...params, page })}
         />
     );
 };
@@ -84,7 +83,6 @@ export const CredentialsContainer = ({
         <EntityContainer
             header={<CredentialsHeader />}
             search={<CredentialsSearch />}
-            pagination={<CredentialsPagination />}
         >
             {children}
         </EntityContainer>
@@ -92,7 +90,14 @@ export const CredentialsContainer = ({
 };
 
 export const CredentialsLoading = () => {
-    return <LoadingView message="Loading credentials..." />;
+    return (
+        <EntityContainer
+            header={<CredentialsHeader disabled />}
+            search={<CredentialsSearch />}
+        >
+            <EntityListSkeleton />
+        </EntityContainer>
+    );
 };
 
 export const CredentialsError = () => {
@@ -118,12 +123,14 @@ const credentialLogos: Record<CredentialType, string> = {
     [CredentialType.OPENAI]: "/logos/openai.svg",
     [CredentialType.ANTHROPIC]: "/logos/anthropic.svg",
     [CredentialType.GEMINI]: "/logos/gemini.svg",
+    [CredentialType.GROQ]: "/logos/groq.svg",
+    [CredentialType.RESEND]: "/logos/resend.svg",
 };
 
 export const CredentialItem = ({
     data,
 }: {
-    data: Credential
+    data: CredentialListItem
 }) => {
     const removeCredential = useRemoveCredential();
 
@@ -138,11 +145,11 @@ export const CredentialItem = ({
             href={`/credentials/${data.id}`}
             title={data.name}
             subtitle={
-                <>
+                <span suppressHydrationWarning>
                     Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
                     &bull; Created{" "}
                     {formatDistanceToNow(data.createdAt, { addSuffix: true })}
-                </>
+                </span>
             }
             image={
                 <div className="size-8 flex items-center justify-center">

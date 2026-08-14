@@ -3,8 +3,12 @@
 import { createId } from "@paralleldrive/cuid2";
 import { useReactFlow } from "@xyflow/react";
 import {
+    ClockIcon,
     GlobeIcon,
     MousePointerIcon,
+    GitBranch,
+    MailIcon,
+    Code2Icon,
 } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -17,6 +21,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { NodeType } from "@/generated/prisma";
+import { DEFAULT_SCHEDULE_DATA } from "@/features/triggers/components/schedule-trigger/utils";
 import { Separator } from "./ui/separator";
 
 export type NodeTypeOption = {
@@ -32,6 +37,12 @@ const triggerNodes: NodeTypeOption[] = [
         label: "Trigger manually",
         description: "Runs the flow on clicking a button. Good for getting started quickly",
         icon: MousePointerIcon,
+    },
+    {
+        type: NodeType.SCHEDULE_TRIGGER,
+        label: "Schedule Timer",
+        description: "Runs the flow automatically on a repeating timer",
+        icon: ClockIcon,
     },
     {
         type: NodeType.GOOGLE_FORM_TRIGGER,
@@ -55,10 +66,28 @@ const executionNodes: NodeTypeOption[] = [
         icon: GlobeIcon,
     },
     {
+        type: NodeType.IF_ELSE,
+        label: "If / Else",
+        description: "Branch your workflow based on a condition",
+        icon: GitBranch,
+    },
+    {
+        type: NodeType.JAVASCRIPT,
+        label: "JavaScript / Code",
+        description: "Execute custom JavaScript transformations",
+        icon: Code2Icon,
+    },
+    {
         type: NodeType.GEMINI,
         label: "Gemini",
         description: "Uses Google Gemini to generate text",
         icon: "/logos/gemini.svg",
+    },
+    {
+        type: NodeType.GROQ,
+        label: "Groq",
+        description: "Uses Groq to generate text",
+        icon: "/logos/groq.svg",
     },
     {
         type: NodeType.OPENAI,
@@ -83,6 +112,12 @@ const executionNodes: NodeTypeOption[] = [
         label: "Slack",
         description: "Send a message to Slack",
         icon: "/logos/slack.svg",
+    },
+    {
+        type: NodeType.EMAIL,
+        label: "Email",
+        description: "Send an email via Resend",
+        icon: MailIcon,
     },
 ];
 
@@ -129,7 +164,10 @@ export function NodeSelector({
 
             const newNode = {
                 id: createId(),
-                data: {},
+                data:
+                    selection.type === NodeType.SCHEDULE_TRIGGER
+                        ? { ...DEFAULT_SCHEDULE_DATA }
+                        : {},
                 position: flowPosition,
                 type: selection.type,
             };

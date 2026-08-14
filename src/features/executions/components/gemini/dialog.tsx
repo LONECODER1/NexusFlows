@@ -65,7 +65,7 @@ export const GeminiDialog = ({
   const { 
     data: credentials,
     isLoading: isLoadingCredentials,
-  } = useCredentialsByType(CredentialType.GEMINI);
+  } = useCredentialsByType(CredentialType.GEMINI, open);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

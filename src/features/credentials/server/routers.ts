@@ -5,6 +5,14 @@ import { PAGINATION } from "@/config/constants";
 import { CredentialType } from "@/generated/prisma";
 import { encrypt } from "@/lib/encryption";
 
+const credentialListSelect = {
+    id: true,
+    name: true,
+    type: true,
+    createdAt: true,
+    updatedAt: true,
+} as const;
+
 export const credentialsRouter = createTRPCRouter({
     create: premiumProcedure
         .input(
@@ -93,6 +101,7 @@ export const credentialsRouter = createTRPCRouter({
                     orderBy: {
                         updatedAt: "desc",
                     },
+                    select: credentialListSelect,
                 }),
                 prisma.credential.count({
                     where: {
@@ -133,6 +142,7 @@ export const credentialsRouter = createTRPCRouter({
                 orderBy: {
                     updatedAt: "desc",
                 },
+                select: credentialListSelect,
             });
         }),
 });

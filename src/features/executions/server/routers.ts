@@ -50,7 +50,11 @@ export const executionsRouter = createTRPCRouter({
                     orderBy: {
                         startedAt: "desc",
                     },
-                    include: {
+                    select: {
+                        id: true,
+                        status: true,
+                        startedAt: true,
+                        completedAt: true,
                         workflow: {
                             select: {
                                 id: true,

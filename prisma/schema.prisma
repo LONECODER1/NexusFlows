@@ -17,6 +17,7 @@ model User {
   email         String
   emailVerified Boolean   @default(false)
   image         String?
+  trialEndsAt   DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
@@ -85,12 +86,16 @@ model Credential {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   Node Node[]
+
+  @@index([userId])
 }
 
 enum CredentialType {
   OPENAI
   ANTHROPIC
   GEMINI
+  GROQ
+  RESEND
 }
 
 model Workflow {
@@ -105,19 +110,26 @@ model Workflow {
 
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum NodeType {
   INITIAL
   MANUAL_TRIGGER
+  SCHEDULE_TRIGGER
+  IF_ELSE
   HTTP_REQUEST
   GOOGLE_FORM_TRIGGER
   STRIPE_TRIGGER
   ANTHROPIC
+  GROQ
   GEMINI
   OPENAI
   DISCORD
   SLACK
+  EMAIL
+  JAVASCRIPT
 }
 
 model Node {
@@ -138,6 +150,8 @@ model Node {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([workflowId])
 }
 
 model Connection {
@@ -157,6 +171,7 @@ model Connection {
   updatedAt DateTime @updatedAt
 
   @@unique([fromNodeId, toNodeId, fromOutput, toInput])
+  @@index([workflowId])
 }
 
 enum ExecutionStatus {

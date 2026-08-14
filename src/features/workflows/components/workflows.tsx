@@ -9,8 +9,8 @@ import {
     EntityList,
     EntityPagination,
     EntitySearch,
+    EntityListSkeleton,
     ErrorView,
-    LoadingView
 } from "@/components/entity-components";
 import { useCreateWorkflow, useRemoveWorkflow, useSuspenseWorkflows } from "../hooks/use-workflows"
 import { useUpgradeModal } from "@/hooks/use-upgrade-modal";
@@ -38,14 +38,22 @@ export const WorkflowsSearch = () => {
 
 export const WorkflowsList = () => {
     const workflows = useSuspenseWorkflows();
+    const [params, setParams] = useWorkflowsParams();
 
     return (
-        <EntityList
-            items={workflows.data.items}
-            getKey={(workflow) => workflow.id}
-            renderItem={(workflow) => <WorkflowItem data={workflow} />}
-            emptyView={<WorkflowsEmpty />}
-        />
+        <>
+            <EntityList
+                items={workflows.data.items}
+                getKey={(workflow) => workflow.id}
+                renderItem={(workflow) => <WorkflowItem data={workflow} />}
+                emptyView={<WorkflowsEmpty />}
+            />
+            <EntityPagination
+                totalPages={workflows.data.totalPages}
+                page={workflows.data.page}
+                onPageChange={(page) => setParams({ ...params, page })}
+            />
+        </>
     )
 };
 
@@ -70,27 +78,13 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
             {modal}
             <EntityHeader
                 title="Workflows"
-                description="Create and manage your workflows"
+                description="Build, organize, and launch automated flows"
                 onNew={handleCreate}
                 newButtonLabel="New workflow"
                 disabled={disabled}
                 isCreating={createWorkflow.isPending}
             />
         </>
-    );
-};
-
-export const WorkflowsPagination = () => {
-    const workflows = useSuspenseWorkflows();
-    const [params, setParams] = useWorkflowsParams();
-
-    return (
-        <EntityPagination
-            disabled={workflows.isFetching}
-            totalPages={workflows.data.totalPages}
-            page={workflows.data.page}
-            onPageChange={(page) => setParams({ ...params, page })}
-        />
     );
 };
 
@@ -103,7 +97,6 @@ export const WorkflowsContainer = ({
         <EntityContainer
             header={<WorkflowsHeader />}
             search={<WorkflowsSearch />}
-            pagination={<WorkflowsPagination />}
         >
             {children}
         </EntityContainer>
@@ -111,7 +104,14 @@ export const WorkflowsContainer = ({
 };
 
 export const WorkflowsLoading = () => {
-    return <LoadingView message="Loading workflows..." />;
+    return (
+        <EntityContainer
+            header={<WorkflowsHeader disabled />}
+            search={<WorkflowsSearch />}
+        >
+            <EntityListSkeleton />
+        </EntityContainer>
+    );
 };
 
 export const WorkflowsError = () => {
@@ -161,11 +161,11 @@ export const WorkflowItem = ({
             href={`/workflows/${data.id}`}
             title={data.name}
             subtitle={
-                <>
+                <span suppressHydrationWarning>
                     Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
                     &bull; Created{" "}
                     {formatDistanceToNow(data.createdAt, { addSuffix: true })}
-                </>
+                </span>
             }
             image={
                 <div className="size-8 flex items-center justify-center">

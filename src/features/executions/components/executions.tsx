@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { formatDistanceToNow } from "date-fns";
 import {
     EmptyView,
@@ -8,25 +9,88 @@ import {
     EntityItem,
     EntityList,
     EntityPagination,
+    EntityListSkeleton,
     ErrorView,
-    LoadingView
 } from "@/components/entity-components";
-import { useSuspenseExecutions } from "../hooks/use-execution"
+import { useSuspenseExecutions } from "../hooks/use-execution";
 import { useExecutionsParams } from "../hooks/use-executions-params";
-import type { Execution } from "@/generated/prisma";
-import { ExecutionStatus } from "@/generated/prisma";
-import { CheckCircle2Icon, ClockIcon, Loader2Icon, XCircleIcon } from "lucide-react";
+import { ExecutionStatus, type Execution } from "@/generated/prisma";
+import { cn } from "@/lib/utils";
+import {
+    CheckCircle2Icon,
+    ClockIcon,
+    Loader2Icon,
+    XCircleIcon,
+} from "lucide-react";
+
+type ExecutionListItem = Pick<
+    Execution,
+    "id" | "status" | "startedAt" | "completedAt"
+> & {
+    workflow: {
+        id: string;
+        name: string;
+    };
+};
+
+const statusStyles: Record<
+    ExecutionStatus,
+    { label: string; className: string; icon: ReactNode }
+> = {
+    [ExecutionStatus.SUCCESS]: {
+        label: "Success",
+        className: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+        icon: <CheckCircle2Icon className="size-5 text-emerald-600 dark:text-emerald-400" />,
+    },
+    [ExecutionStatus.FAILED]: {
+        label: "Failed",
+        className: "bg-red-500/10 text-red-700 dark:text-red-400",
+        icon: <XCircleIcon className="size-5 text-red-600 dark:text-red-400" />,
+    },
+    [ExecutionStatus.RUNNING]: {
+        label: "Running",
+        className: "bg-blue-500/10 text-blue-700 dark:text-blue-400",
+        icon: <Loader2Icon className="size-5 animate-spin text-blue-600 dark:text-blue-400" />,
+    },
+};
+
+function ExecutionStatusBadge({ status }: { status: ExecutionStatus }) {
+    const config = statusStyles[status] ?? {
+        label: "Pending",
+        className: "bg-muted text-muted-foreground",
+        icon: <ClockIcon className="size-5 text-muted-foreground" />,
+    };
+
+    return (
+        <span
+            className={cn(
+                "inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-wide",
+                config.className,
+            )}
+        >
+            {config.label}
+        </span>
+    );
+}
 
 export const ExecutionsList = () => {
     const executions = useSuspenseExecutions();
+    const [params, setParams] = useExecutionsParams();
 
     return (
-        <EntityList
-            items={executions.data.items}
-            getKey={(execution) => execution.id}
-            renderItem={(execution) => <ExecutionItem data={execution} />}
-            emptyView={<ExecutionsEmpty />}
-        />
+        <>
+            <EntityList
+                items={executions.data.items}
+                getKey={(execution) => execution.id}
+                renderItem={(execution) => <ExecutionItem data={execution} />}
+                emptyView={<ExecutionsEmpty />}
+            />
+            <EntityPagination
+                totalPages={executions.data.totalPages}
+                page={executions.data.page}
+                onPageChange={(page) => setParams({ ...params, page })}
+            />
+        </>
     );
 };
 
@@ -34,42 +98,29 @@ export const ExecutionsHeader = () => {
     return (
         <EntityHeader
             title="Executions"
-            description="View your workflow execution history"
-        />
-    );
-};
-
-export const ExecutionsPagination = () => {
-    const executions = useSuspenseExecutions();
-    const [params, setParams] = useExecutionsParams();
-
-    return (
-        <EntityPagination
-            disabled={executions.isFetching}
-            totalPages={executions.data.totalPages}
-            page={executions.data.page}
-            onPageChange={(page) => setParams({ ...params, page })}
+            description="Monitor workflow runs, status, and duration"
         />
     );
 };
 
 export const ExecutionsContainer = ({
-    children
+    children,
 }: {
     children: React.ReactNode;
 }) => {
     return (
-        <EntityContainer
-            header={<ExecutionsHeader />}
-            pagination={<ExecutionsPagination />}
-        >
+        <EntityContainer header={<ExecutionsHeader />}>
             {children}
         </EntityContainer>
     );
 };
 
 export const ExecutionsLoading = () => {
-    return <LoadingView message="Loading executions..." />;
+    return (
+        <EntityContainer header={<ExecutionsHeader />}>
+            <EntityListSkeleton />
+        </EntityContainer>
+    );
 };
 
 export const ExecutionsError = () => {
@@ -78,39 +129,16 @@ export const ExecutionsError = () => {
 
 export const ExecutionsEmpty = () => {
     return (
-        <EmptyView
-            message="You haven't created any executions yet. Get started by running your first workflow"
-        />
+        <EmptyView message="Run a workflow to see execution history appear here." />
     );
-};
-
-const getStatusIcon = (status: ExecutionStatus) => {
-    switch (status) {
-        case ExecutionStatus.SUCCESS:
-            return <CheckCircle2Icon className="size-5 text-green-600" />;
-        case ExecutionStatus.FAILED:
-            return <XCircleIcon className="size-5 text-red-600" />;
-        case ExecutionStatus.RUNNING:
-            return <Loader2Icon className="size-5 text-blue-600 animate-spin" />;
-        default:
-            return <ClockIcon className="size-5 text-muted-foreground" />;
-    }
-}
-
-const formatStatus = (status: ExecutionStatus) => {
-    return status.charAt(0) + status.slice(1).toLowerCase();
 };
 
 export const ExecutionItem = ({
     data,
 }: {
-    data: Execution & {
-        workflow: {
-            id: string;
-            name: string;
-        };
-    };
+    data: ExecutionListItem;
 }) => {
+    const statusConfig = statusStyles[data.status] ?? statusStyles[ExecutionStatus.RUNNING];
     const duration = data.completedAt
         ? Math.round(
             (new Date(data.completedAt).getTime() - new Date(data.startedAt).getTime()) / 1000,
@@ -118,23 +146,19 @@ export const ExecutionItem = ({
         : null;
 
     const subtitle = (
-        <>
-            {data.workflow.name} &bull; Started{" "}
-            {formatDistanceToNow(data.startedAt, { addSuffix: true })}
-            {duration !== null && <> &bull; Took {duration}s </>}
-        </>
+        <span suppressHydrationWarning>
+            Started {formatDistanceToNow(data.startedAt, { addSuffix: true })}
+            {duration !== null && <> · Completed in {duration}s</>}
+        </span>
     );
 
     return (
         <EntityItem
             href={`/executions/${data.id}`}
-            title={formatStatus(data.status)}
+            title={data.workflow.name}
+            badge={<ExecutionStatusBadge status={data.status} />}
             subtitle={subtitle}
-            image={
-                <div className="size-8 flex items-center justify-center">
-                    {getStatusIcon(data.status)}
-                </div>
-            }
+            image={statusConfig.icon}
         />
-    )
+    );
 };

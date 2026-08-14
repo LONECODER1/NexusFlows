@@ -17,6 +17,7 @@ interface BaseExecutionNodeProps extends NodeProps {
     status?: NodeStatus;
     onSettings?: () => void;
     onDoubleClick?: () => void;
+    hideSourceHandle?: boolean;
 };
 
 export const BaseExecutionNode = memo(
@@ -29,6 +30,7 @@ export const BaseExecutionNode = memo(
         status = "initial",
         onSettings,
         onDoubleClick,
+        hideSourceHandle = false,
     }: BaseExecutionNodeProps) => {
         const { setNodes, setEdges } = useReactFlow();
         const handleDelete = () => {
@@ -69,11 +71,13 @@ export const BaseExecutionNode = memo(
                                 type="target"
                                 position={Position.Left}
                             />
-                            <BaseHandle
-                                id="source-1"
-                                type="source"
-                                position={Position.Right}
-                            />
+                            {!hideSourceHandle && (
+                                <BaseHandle
+                                    id="source-1"
+                                    type="source"
+                                    position={Position.Right}
+                                />
+                            )}
                         </BaseNodeContent>
                     </BaseNode>
                 </NodeStatusIndicator>

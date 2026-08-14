@@ -88,13 +88,13 @@ export const ExecutionView = ({
 
           <div>
             <p className="text-sm font-medium text-muted-foreground">Started</p>
-            <p className="text-sm">{formatDistanceToNow(execution.startedAt, { addSuffix: true })}</p>
+            <p className="text-sm" suppressHydrationWarning>{formatDistanceToNow(execution.startedAt, { addSuffix: true })}</p>
           </div>
 
           {execution.completedAt ? (
             <div>
               <p className="text-sm font-medium text-muted-foreground">Completed</p>
-              <p className="text-sm">{formatDistanceToNow(execution.completedAt, { addSuffix: true })}</p>
+              <p className="text-sm" suppressHydrationWarning>{formatDistanceToNow(execution.completedAt, { addSuffix: true })}</p>
             </div>
           ) : null}
 

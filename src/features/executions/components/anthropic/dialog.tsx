@@ -65,7 +65,7 @@ export const AnthropicDialog = ({
     const {
         data: credentials,
         isLoading: isLoadingCredentials,
-    } = useCredentialsByType(CredentialType.ANTHROPIC);
+    } = useCredentialsByType(CredentialType.ANTHROPIC, open);
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

@@ -2,12 +2,36 @@ import { checkout, polar, portal } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { db as prisma } from "@/lib/db";
+import { getTrialEndDate } from "@/features/subscriptions/lib/trial";
 import { polarClient } from "./polar";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
+    user: {
+        additionalFields: {
+            trialEndsAt: {
+                type: "date",
+                required: false,
+                input: false,
+            },
+        },
+    },
+    databaseHooks: {
+        user: {
+            create: {
+                before: async (user) => {
+                    return {
+                        data: {
+                            ...user,
+                            trialEndsAt: getTrialEndDate(),
+                        },
+                    };
+                },
+            },
+        },
+    },
     trustedOrigins: [
         "http://172.16.0.2:3000",
     ],

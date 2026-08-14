@@ -92,7 +92,13 @@ export const useUpdateCredential = () => {
 /**
  * Hook to fetch credentials by type
  */
-export const useCredentialsByType = (type: CredentialType) => {
+export const useCredentialsByType = (
+    type: CredentialType,
+    enabled = true,
+) => {
     const trpc = useTRPC();
-    return useQuery(trpc.credentials.getByType.queryOptions({ type }));
+    return useQuery({
+        ...trpc.credentials.getByType.queryOptions({ type }),
+        enabled,
+    });
 };

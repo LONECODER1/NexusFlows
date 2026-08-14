@@ -1,14 +1,13 @@
-import { auth } from '@/lib/auth';
+import { getServerSession } from '@/lib/auth-session';
+import { isTrialActive } from '@/features/subscriptions/lib/trial';
+import { db } from '@/lib/db';
 import { polarClient } from '@/lib/polar';
 import { initTRPC, TRPCError } from '@trpc/server';
-import { headers } from 'next/headers';
 import { cache } from 'react';
 import superjson from "superjson"
+
 export const createTRPCContext = cache(async () => {
-    /**
-     * @see: https://trpc.io/docs/server/context
-     */
-    return { userId: 'user_123' };
+    return {};
 });
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
@@ -25,9 +24,7 @@ export const createTRPCRouter = t.router;
 export const createCallerFactory = t.createCallerFactory;
 export const baseProcedure = t.procedure;
 export const protectedProcedure = baseProcedure.use(async ({ ctx, next }) => {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    const session = await getServerSession();
 
     if (!session) {
         throw new TRPCError({
@@ -51,6 +48,15 @@ export const premiumProcedure = protectedProcedure.use(
       process.env.BYPASS_SUBSCRIPTION === "true";
 
     if (isAdmin) {
+      return next({ ctx: { ...ctx, customer: { activeSubscriptions: [] } } });
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { trialEndsAt: true },
+    });
+
+    if (isTrialActive(user?.trialEndsAt)) {
       return next({ ctx: { ...ctx, customer: { activeSubscriptions: [] } } });
     }
 

@@ -23,7 +23,9 @@ import {
     SidebarMenuItem,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { useSidebarPrefetch } from "@/components/sidebar-prefetch";
 import { authClient } from "@/lib/auth-client";
+import { APP_NAME } from "@/config/brand";
 import { useHasActiveSubscription } from "@/features/subscriptions/hooks/use-subscription";
 
 const menuItems = [
@@ -53,16 +55,20 @@ export const AppSidebar = () => {
     const router = useRouter();
     const pathname = usePathname();
     const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
+    const { prefetchRoute } = useSidebarPrefetch();
 
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem className="flex items-center justify-between">
-                        <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
-                            <Link href="/" prefetch>
-                                <Image src="/logos/logo.svg" alt="Nodebase" width={30} height={30} />
-                                <span className="font-semibold text-sm">Nodebase</span>
+                        <SidebarMenuButton asChild className="gap-x-3 h-11 px-3">
+                            <Link href="/workflows" prefetch>
+                                <Image src="/logos/NexusFlows.png" alt={APP_NAME} width={28} height={28} />
+                                <div className="flex flex-col items-start leading-none">
+                                    <span className="font-semibold text-sm">{APP_NAME}</span>
+                                    <span className="text-[10px] text-muted-foreground">Workflow automation</span>
+                                </div>
                             </Link>
                         </SidebarMenuButton>
                         <SidebarTrigger />
@@ -86,7 +92,12 @@ export const AppSidebar = () => {
                                             asChild
                                             className="gap-x-4 h-10 px-4"
                                         >
-                                            <Link href={item.url} prefetch>
+                                            <Link
+                                                href={item.url}
+                                                prefetch
+                                                onMouseEnter={() => prefetchRoute(item.url)}
+                                                onFocus={() => prefetchRoute(item.url)}
+                                            >
                                                 <item.icon className="size-4" />
                                                 <span>{item.title}</span>
                                             </Link>

@@ -62,6 +62,16 @@ const credentialTypeOptions = [
     label: "Gemini",
     logo: "/logos/gemini.svg",
   },
+  {
+    value: CredentialType.GROQ,
+    label: "Groq",
+    logo: "/logos/groq.svg",
+  },
+  {
+    value: CredentialType.RESEND,
+    label: "Resend",
+    logo: "/logos/resend.svg",
+  },
 ];
 
 interface CredentialFormProps {

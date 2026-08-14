@@ -27,8 +27,8 @@ export const UpgradeModal = ({
                 <AlertDialogHeader>
                     <AlertDialogTitle>Upgrade to Pro</AlertDialogTitle>
                     <AlertDialogDescription>
-                        You need an active subscription to perform this action. Upgrade to
-                        Pro to unlock all features.
+                        Your 30-day free trial has ended. Subscribe to Pro to continue
+                        creating workflows and credentials.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
