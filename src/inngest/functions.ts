@@ -2,7 +2,7 @@ import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import prisma from "@/lib/db";
 import { topologicalSort } from "./utils";
-import { ExecutionStatus, NodeType } from "@/generated/prisma";
+import { Connection, ExecutionStatus, NodeType } from "@/generated/prisma";
 import { getExecutor } from "@/features/executions/lib/executor-registry";
 import { httpRequestChannel } from "./channels/http-request";
 import { manualTriggerChannel } from "./channels/manual-trigger";
@@ -125,8 +125,8 @@ export const executeWorkflow = inngest.createFunction(
     // Execute each node
     for (const node of sortedNodes) {
       if (skippedNodeIds.has(node.id)) {
-        const outgoingConnections = connections.filter((c) => c.fromNodeId === node.id);
-        outgoingConnections.forEach((c) => skippedNodeIds.add(c.toNodeId));
+        const outgoingConnections = connections.filter((c: Connection) => c.fromNodeId === node.id);
+        outgoingConnections.forEach((c: Connection) => skippedNodeIds.add(c.toNodeId));
         continue;
       }
 
@@ -142,9 +142,9 @@ export const executeWorkflow = inngest.createFunction(
 
       if (context?._branchOutcome) {
         const skippedConnections = connections.filter(
-            (c) => c.fromNodeId === node.id && c.fromOutput !== context._branchOutcome
+            (c: Connection) => c.fromNodeId === node.id && c.fromOutput !== context._branchOutcome
         );
-        skippedConnections.forEach((c) => skippedNodeIds.add(c.toNodeId));
+        skippedConnections.forEach((c: Connection) => skippedNodeIds.add(c.toNodeId));
       }
     }
 

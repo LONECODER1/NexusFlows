@@ -48,6 +48,7 @@
     "clsx": "^2.1.1",
     "cryptr": "^6.4.0",
     "handlebars": "^4.7.9",
+    "html-entities": "^2.6.0",
     "inngest": "^3.42.3",
     "jotai": "^2.20.2",
     "ky": "^2.0.2",
