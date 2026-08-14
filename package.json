@@ -8,7 +8,8 @@
     "inngest:dev": "npx inngest-cli@latest dev -u http://127.0.0.1:3000/api/inngest",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.36",
@@ -21,8 +22,8 @@
     "@paralleldrive/cuid2": "^3.3.0",
     "@polar-sh/better-auth": "^1.8.4",
     "@polar-sh/sdk": "^0.47.1",
-    "@prisma/adapter-neon": "^7.9.0",
-    "@prisma/client": "^7.9.0",
+    "@prisma/adapter-neon": "^6.16.3",
+    "@prisma/client": "^6.16.3",
     "@radix-ui/react-alert-dialog": "^1.1.23",
     "@radix-ui/react-avatar": "^1.2.4",
     "@radix-ui/react-collapsible": "^1.1.20",
@@ -80,7 +81,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.4",
     "mprocs": "^0.9.6",
-    "prisma": "^7.9.0",
+    "prisma": "^6.16.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
     "typescript": "^5"

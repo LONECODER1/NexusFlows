@@ -69,8 +69,11 @@ export const executeWorkflow = inngest.createFunction(
     step,
     publish,
   }: {
-    event: { id: string; data: { workflowId: string;[key: string]: any } };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    event: { id: string; data: { workflowId: string; [key: string]: any } };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     step: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     publish: any;
   }) => {
     const inngestEventId = event.id;
@@ -117,13 +120,13 @@ export const executeWorkflow = inngest.createFunction(
 
     // Initialize context with any initial data from the trigger
     let context = event.data.initialData || {};
-    let skippedNodeIds = new Set<string>();
+    const skippedNodeIds = new Set<string>();
 
     // Execute each node
     for (const node of sortedNodes) {
       if (skippedNodeIds.has(node.id)) {
-        const outgoingConnections = connections.filter((c: any) => c.fromNodeId === node.id);
-        outgoingConnections.forEach((c: any) => skippedNodeIds.add(c.toNodeId));
+        const outgoingConnections = connections.filter((c) => c.fromNodeId === node.id);
+        outgoingConnections.forEach((c) => skippedNodeIds.add(c.toNodeId));
         continue;
       }
 
@@ -139,9 +142,9 @@ export const executeWorkflow = inngest.createFunction(
 
       if (context?._branchOutcome) {
         const skippedConnections = connections.filter(
-            (c: any) => c.fromNodeId === node.id && c.fromOutput !== context._branchOutcome
+            (c) => c.fromNodeId === node.id && c.fromOutput !== context._branchOutcome
         );
-        skippedConnections.forEach((c: any) => skippedNodeIds.add(c.toNodeId));
+        skippedConnections.forEach((c) => skippedNodeIds.add(c.toNodeId));
       }
     }
 
