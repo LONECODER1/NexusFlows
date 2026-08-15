@@ -6,19 +6,21 @@ type RealtimeChannel = Parameters<typeof getSubscriptionToken>[1]["channel"];
 type RealtimeTopics = Parameters<typeof getSubscriptionToken>[1]["topics"];
 
 export async function fetchRealtimeToken<
-  TChannel extends RealtimeChannel,
-  TTopics extends RealtimeTopics,
+  const TChannel extends RealtimeChannel,
+  const TTopics extends RealtimeTopics,
 >(
   label: string,
   channel: TChannel,
   topics: TTopics,
   client: Inngest = inngest,
-): Promise<Realtime.Token<Realtime.Channel.AsChannel<TChannel>, TTopics>> {
+): Promise<
+  Realtime.Subscribe.Token<Realtime.Channel.AsChannel<TChannel>, TTopics>
+> {
   try {
-    return (await getSubscriptionToken(client, { channel: channel as any, topics })) as unknown as Realtime.Token<
-      Realtime.Channel.AsChannel<TChannel>,
-      TTopics
-    >;
+    return await getSubscriptionToken(client, {
+      channel: channel as Realtime.Subscribe.InferChannelInput<TChannel>,
+      topics,
+    });
   } catch (error) {
     console.error(`[Inngest Realtime] Failed to fetch token for ${label}:`, error);
 
