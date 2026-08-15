@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,6 +42,8 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
     const router = useRouter();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const form = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema),
@@ -158,13 +162,32 @@ export function RegisterForm() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Password</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="password"
-                                                        placeholder="*********"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <div className="relative">
+                                                    <FormControl>
+                                                        <Input
+                                                            type={showPassword ? "text" : "password"}
+                                                            placeholder="*********"
+                                                            className="pr-10"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="absolute right-0 top-0 h-full hover:bg-transparent text-muted-foreground hover:text-foreground"
+                                                        onClick={() => setShowPassword((prev) => !prev)}
+                                                    >
+                                                        {showPassword ? (
+                                                            <EyeOff className="h-4 w-4" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4" />
+                                                        )}
+                                                        <span className="sr-only">
+                                                            {showPassword ? "Hide password" : "Show password"}
+                                                        </span>
+                                                    </Button>
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
@@ -175,13 +198,32 @@ export function RegisterForm() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Confirm Password</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="password"
-                                                        placeholder="*********"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
+                                                <div className="relative">
+                                                    <FormControl>
+                                                        <Input
+                                                            type={showConfirmPassword ? "text" : "password"}
+                                                            placeholder="*********"
+                                                            className="pr-10"
+                                                            {...field}
+                                                        />
+                                                    </FormControl>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        className="absolute right-0 top-0 h-full hover:bg-transparent text-muted-foreground hover:text-foreground"
+                                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                                    >
+                                                        {showConfirmPassword ? (
+                                                            <EyeOff className="h-4 w-4" />
+                                                        ) : (
+                                                            <Eye className="h-4 w-4" />
+                                                        )}
+                                                        <span className="sr-only">
+                                                            {showConfirmPassword ? "Hide password" : "Show password"}
+                                                        </span>
+                                                    </Button>
+                                                </div>
                                                 <FormMessage />
                                             </FormItem>
                                         )}
