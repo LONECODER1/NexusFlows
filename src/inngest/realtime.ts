@@ -15,7 +15,10 @@ export async function fetchRealtimeToken<
   client: Inngest = inngest,
 ): Promise<Realtime.Token<Realtime.Channel.AsChannel<TChannel>, TTopics>> {
   try {
-    return await getSubscriptionToken(client, { channel, topics });
+    return (await getSubscriptionToken(client, { channel: channel as any, topics })) as unknown as Realtime.Token<
+      Realtime.Channel.AsChannel<TChannel>,
+      TTopics
+    >;
   } catch (error) {
     console.error(`[Inngest Realtime] Failed to fetch token for ${label}:`, error);
 
