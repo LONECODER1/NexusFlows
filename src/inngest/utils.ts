@@ -53,9 +53,17 @@ export const sendWorkflowExecution = async (data: {
     workflowId: string;
     [key: string]: unknown;
 }) => {
-    return inngest.send({
-        name: "workflows/execute.workflow",
-        data,
-        id: createId(),
-    });
+    try {
+        return await inngest.send({
+            name: "workflows/execute.workflow",
+            data,
+            id: createId(),
+        });
+    } catch (error) {
+        console.error(
+            `[Inngest] Failed to send workflow execution for ${data.workflowId}:`,
+            error,
+        );
+        throw error;
+    }
 };

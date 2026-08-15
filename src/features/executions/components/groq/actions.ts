@@ -1,8 +1,8 @@
 "use server";
 
-import { getSubscriptionToken, type Realtime } from "@inngest/realtime";
+import type { Realtime } from "@inngest/realtime";
 import { groqChannel } from "@/inngest/channels/groq";
-import { inngest } from "@/inngest/client";
+import { fetchRealtimeToken } from "@/inngest/realtime";
 
 export type GroqToken = Realtime.Token<
   typeof groqChannel,
@@ -10,10 +10,5 @@ export type GroqToken = Realtime.Token<
 >;
 
 export async function fetchGroqRealtimeToken(): Promise<GroqToken> {
-  const token = await getSubscriptionToken(inngest, {
-    channel: groqChannel(),
-    topics: ["status"],
-  });
-
-  return token;
+  return fetchRealtimeToken("groq", groqChannel(), ["status"]);
 };

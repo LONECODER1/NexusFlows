@@ -3,6 +3,12 @@ import { realtimeMiddleware } from "@inngest/realtime/middleware";
 import { Inngest } from "inngest";
 
 function getInngestIsDev(): boolean {
+  // Production deployments must always use Inngest Cloud, even if INNGEST_DEV
+  // is copied from a local .env file into Vercel.
+  if (process.env.NODE_ENV === "production") {
+    return false;
+  }
+
   const devFlag = process.env.INNGEST_DEV;
 
   if (devFlag === "0" || devFlag === "false") {
@@ -13,7 +19,7 @@ function getInngestIsDev(): boolean {
     return true;
   }
 
-  return process.env.NODE_ENV !== "production";
+  return true;
 }
 
 export const inngest = new Inngest({

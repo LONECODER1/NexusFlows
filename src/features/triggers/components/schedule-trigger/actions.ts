@@ -1,8 +1,8 @@
 "use server";
 
-import { getSubscriptionToken, type Realtime } from "@inngest/realtime";
+import type { Realtime } from "@inngest/realtime";
 import { scheduleTriggerChannel } from "@/inngest/channels/schedule-trigger";
-import { inngest } from "@/inngest/client";
+import { fetchRealtimeToken } from "@/inngest/realtime";
 
 export type ScheduleTriggerToken = Realtime.Token<
   typeof scheduleTriggerChannel,
@@ -10,10 +10,9 @@ export type ScheduleTriggerToken = Realtime.Token<
 >;
 
 export async function fetchScheduleTriggerRealtimeToken(): Promise<ScheduleTriggerToken> {
-  const token = await getSubscriptionToken(inngest, {
-    channel: scheduleTriggerChannel(),
-    topics: ["status"],
-  });
-
-  return token;
-}
+  return fetchRealtimeToken(
+    "schedule-trigger",
+    scheduleTriggerChannel(),
+    ["status"],
+  );
+};

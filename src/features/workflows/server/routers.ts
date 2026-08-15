@@ -3,6 +3,7 @@ import { db as prisma } from "@/lib/db";
 import type { Node, Edge } from "@xyflow/react";
 import { createTRPCRouter, premiumProcedure, protectedProcedure } from "@/trpc/init";
 import z from "zod";
+import { TRPCError } from "@trpc/server";
 import { PAGINATION } from "@/config/constants";
 import { NodeType } from "@/generated/prisma";
 import { inngest } from "@/inngest/client";
@@ -12,16 +13,44 @@ export const workflowsRouter = createTRPCRouter({
   execute: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(async ({ input, ctx }) => {
-      const workflow = await prisma.workflow.findUniqueOrThrow({
-        where: {
-          id: input.id,
-          userId: ctx.auth.user.id,
-        },
-      });
+      let workflow;
 
-      await sendWorkflowExecution({
-        workflowId: input.id,
-      });
+      try {
+        workflow = await prisma.workflow.findUniqueOrThrow({
+          where: {
+            id: input.id,
+            userId: ctx.auth.user.id,
+          },
+        });
+      } catch (error) {
+        console.error(
+          `[Workflows] Workflow not found or unauthorized: ${input.id}`,
+          error,
+        );
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Workflow not found or unauthorized",
+        });
+      }
+
+      try {
+        await sendWorkflowExecution({
+          workflowId: input.id,
+        });
+      } catch (error) {
+        console.error(
+          `[Workflows] Failed to execute workflow: ${input.id}`,
+          error,
+        );
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Failed to start workflow execution",
+          cause: error,
+        });
+      }
 
       return workflow;
     }),

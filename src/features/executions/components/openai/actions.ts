@@ -1,8 +1,8 @@
 "use server";
 
-import { getSubscriptionToken, type Realtime } from "@inngest/realtime";
+import type { Realtime } from "@inngest/realtime";
 import { openAiChannel } from "@/inngest/channels/openai";
-import { inngest } from "@/inngest/client";
+import { fetchRealtimeToken } from "@/inngest/realtime";
 
 export type OpenAiToken = Realtime.Token<
   typeof openAiChannel,
@@ -10,10 +10,5 @@ export type OpenAiToken = Realtime.Token<
 >;
 
 export async function fetchOpenAiRealtimeToken(): Promise<OpenAiToken> {
-  const token = await getSubscriptionToken(inngest, {
-    channel: openAiChannel(),
-    topics: ["status"],
-  });
-
-  return token;
+  return fetchRealtimeToken("openai", openAiChannel(), ["status"]);
 };
