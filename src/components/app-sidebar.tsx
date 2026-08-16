@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import {
     CreditCardIcon,
     FolderOpenIcon,
@@ -7,6 +9,8 @@ import {
     KeyIcon,
     LogOutIcon,
     StarIcon,
+    Sun,
+    Moon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,6 +26,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarTrigger,
+    useSidebar,
 } from "@/components/ui/sidebar";
 import { useSidebarPrefetch } from "@/components/sidebar-prefetch";
 import { authClient } from "@/lib/auth-client";
@@ -56,21 +61,30 @@ export const AppSidebar = () => {
     const pathname = usePathname();
     const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
     const { prefetchRoute } = useSidebarPrefetch();
+    
+    const { theme, setTheme } = useTheme();
+    const { state } = useSidebar();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     return (
         <Sidebar collapsible="icon">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem className="flex items-center justify-between">
-                        <SidebarMenuButton asChild className="gap-x-3 h-11 px-3">
-                            <Link href="/workflows" prefetch>
-                                <Image src="/logos/NexusFlows.png" alt={APP_NAME} width={28} height={28} />
-                                <div className="flex flex-col items-start leading-none">
-                                    <span className="font-semibold text-sm">{APP_NAME}</span>
-                                    <span className="text-[10px] text-muted-foreground">Workflow automation</span>
-                                </div>
-                            </Link>
-                        </SidebarMenuButton>
+                        {state !== "collapsed" && (
+                            <SidebarMenuButton asChild className="gap-x-3 h-11 px-3">
+                                <Link href="/" prefetch>
+                                    <Image src="/logos/NexusFlows.png" alt={APP_NAME} width={28} height={28} />
+                                    <div className="flex flex-col items-start leading-none">
+                                        <span className="font-semibold text-sm">{APP_NAME}</span>
+                                        <span className="text-[10px] text-muted-foreground">Workflow automation</span>
+                                    </div>
+                                </Link>
+                            </SidebarMenuButton>
+                        )}
                         <SidebarTrigger />
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -135,12 +149,32 @@ export const AppSidebar = () => {
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
+                            tooltip="Toggle Theme"
+                            className="gap-x-4 h-10 px-4 cursor-pointer"
+                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                            disabled={!mounted}
+                        >
+                            <div className="relative h-4 w-4 flex items-center justify-center">
+                                {mounted ? (
+                                    <>
+                                        <Sun className="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                                        <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                                    </>
+                                ) : (
+                                    <Sun className="h-4 w-4 text-muted-foreground/50" />
+                                )}
+                            </div>
+                            <span>Toggle Theme</span>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton
                             tooltip="Sign out"
                             className="gap-x-4 h-10 px-4"
                             onClick={() => authClient.signOut({
                                 fetchOptions: {
                                     onSuccess: () => {
-                                        router.push("/login");
+                                        router.push("/");
                                     },
                                 },
                             })}

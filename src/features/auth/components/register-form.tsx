@@ -59,7 +59,7 @@ export function RegisterForm() {
             provider: "github",
         }, {
             onSuccess: () => {
-                router.push("/");
+                router.push("/workflows");
             },
             onError: () => {
                 toast.error("Something went wrong");
@@ -72,7 +72,7 @@ export function RegisterForm() {
             provider: "google",
         }, {
             onSuccess: () => {
-                router.push("/");
+                router.push("/workflows");
             },
             onError: () => {
                 toast.error("Something went wrong");
@@ -86,11 +86,11 @@ export function RegisterForm() {
                 name: values.email,
                 email: values.email,
                 password: values.password,
-                callbackURL: "/",
+                callbackURL: "/workflows",
             },
             {
                 onSuccess: () => {
-                    router.push("/");
+                    router.push("/workflows");
                 },
                 onError: (ctx) => {
                     toast.error(ctx.error.message || "Something went wrong");

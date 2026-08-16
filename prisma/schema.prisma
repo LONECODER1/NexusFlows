@@ -131,6 +131,8 @@ enum NodeType {
   SLACK
   EMAIL
   JAVASCRIPT
+  TELEGRAM
+  SWITCH
 }
 
 model Node {

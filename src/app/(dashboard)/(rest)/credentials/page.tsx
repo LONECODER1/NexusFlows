@@ -2,6 +2,7 @@ import { CredentialsContainer, CredentialsError, CredentialsList } from "@/featu
 import { credentialsParamsLoader } from "@/features/credentials/server/params-loader";
 import { prefetchCredentials } from "@/features/credentials/server/prefetch";
 import { ListSection } from "@/components/list-section";
+import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
 import { SearchParams } from "nuqs";
 
@@ -10,6 +11,7 @@ type Props = {
 };
 
 const Page = async ({ searchParams }: Props) => {
+  await requireAuth();
   const params = await credentialsParamsLoader(searchParams);
   await prefetchCredentials(params);
 

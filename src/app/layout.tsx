@@ -29,6 +29,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,14 +42,21 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
-        <TRPCReactProvider>
-          <NuqsAdapter>
-            <Provider>
-              {children}
-              <Toaster />
-            </Provider>
-          </NuqsAdapter>
-        </TRPCReactProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TRPCReactProvider>
+            <NuqsAdapter>
+              <Provider>
+                {children}
+                <Toaster />
+              </Provider>
+            </NuqsAdapter>
+          </TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

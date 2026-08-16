@@ -16,6 +16,8 @@ import { SlackNode } from "@/features/executions/components/slack/node";
 import { IfElseNode } from "@/features/executions/components/if-else/node";
 import { EmailNode } from "@/features/executions/components/email/node";
 import { JavaScriptNode } from "@/features/executions/components/javascript/node";
+import { TelegramNode } from "@/features/executions/components/telegram/node";
+import { SwitchNode } from "@/features/executions/components/switch/node";
 
 export const nodeComponents = {
     [NodeType.INITIAL]: InitialNode,
@@ -33,6 +35,8 @@ export const nodeComponents = {
     [NodeType.IF_ELSE]: IfElseNode,
     [NodeType.EMAIL]: EmailNode,
     [NodeType.JAVASCRIPT]: JavaScriptNode,
+    [NodeType.TELEGRAM]: TelegramNode,
+    [NodeType.SWITCH]: SwitchNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;

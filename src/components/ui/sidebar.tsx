@@ -227,11 +227,11 @@ const Sidebar = React.forwardRef<
         ref={ref}
         className={cn(
           "group peer hidden text-sidebar-foreground md:block w-[var(--sidebar-width)] shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
-          "group-data-[collapsible=offcanvas]:w-0",
-          "group-data-[side=right]:rotate-180",
+          "data-[state=collapsed]:data-[collapsible=offcanvas]:w-0",
+          "data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
-            ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-            : "group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)]",
+            ? "data-[state=collapsed]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
+            : "data-[state=collapsed]:w-[var(--sidebar-width-icon)]",
           className
         )}
         data-state={state}

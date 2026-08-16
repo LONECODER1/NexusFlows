@@ -27,7 +27,7 @@ const Page = async ({ params }: PageProps) => {
       <ErrorBoundary FallbackComponent={EditorError}>
         <Suspense fallback={<EditorLoading />}>
           <EditorHeader workflowId={workflowId} />
-          <main className="flex-1">
+          <main className="flex-1 min-w-0 overflow-hidden">
             <Editor workflowId={workflowId} />
           </main>
         </Suspense>

@@ -14,6 +14,8 @@ import { slackExecutor } from "../components/slack/executor";
 import { ifElseExecutor } from "../components/if-else/executor";
 import { emailExecutor } from "../components/email/executor";
 import { javascriptExecutor } from "../components/javascript/executor";
+import { telegramExecutor } from "../components/telegram/executor";
+import { switchExecutor } from "../components/switch/executor";
 
 export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.INITIAL]: manualTriggerExecutor,
@@ -31,6 +33,8 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
     [NodeType.IF_ELSE]: ifElseExecutor,
     [NodeType.EMAIL]: emailExecutor,
     [NodeType.JAVASCRIPT]: javascriptExecutor,
+    [NodeType.TELEGRAM]: telegramExecutor,
+    [NodeType.SWITCH]: switchExecutor,
 };
 
 export const getExecutor = (type: NodeType): NodeExecutor => {

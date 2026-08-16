@@ -9,6 +9,7 @@ import {
     GitBranch,
     MailIcon,
     Code2Icon,
+    Shuffle,
 } from "lucide-react";
 import { useCallback } from "react";
 import { toast } from "sonner";
@@ -118,6 +119,18 @@ const executionNodes: NodeTypeOption[] = [
         label: "Email",
         description: "Send an email via Resend",
         icon: MailIcon,
+    },
+    {
+        type: NodeType.TELEGRAM,
+        label: "Telegram",
+        description: "Send a message to Telegram Chat/Channel",
+        icon: "/logos/telegram.svg",
+    },
+    {
+        type: NodeType.SWITCH,
+        label: "Switch / Router",
+        description: "Route your workflow to Case 1, 2, 3, or Default based on a property value",
+        icon: Shuffle,
     },
 ];
 

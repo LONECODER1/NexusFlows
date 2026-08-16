@@ -2,6 +2,7 @@ import { ExecutionsContainer, ExecutionsError, ExecutionsList } from "@/features
 import { executionsParamsLoader } from "@/features/executions/server/params-loader";
 import { prefetchExecutions } from "@/features/executions/server/prefetch";
 import { ListSection } from "@/components/list-section";
+import { requireAuth } from "@/lib/auth-utils";
 import { HydrateClient } from "@/trpc/server";
 import { SearchParams } from "nuqs";
 
@@ -10,6 +11,7 @@ type Props = {
 };
 
 const Page = async ({ searchParams }: Props) => {
+    await requireAuth();
     const params = await executionsParamsLoader(searchParams);
     await prefetchExecutions(params);
 

@@ -186,3 +186,87 @@
 .react-flow__node.selected #base-node {
   @apply ring-3 ring-muted-foreground/25 shadow-lg;
 }
+
+/* Infinite Marquee Slider Animations */
+@keyframes slide-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.3333%);
+  }
+}
+
+@keyframes slide-right {
+  0% {
+    transform: translateX(-33.3333%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-left {
+  animation: slide-left 35s linear infinite;
+}
+
+.animate-slide-right {
+  animation: slide-right 35s linear infinite;
+}
+
+/* React Flow Controls & Minimap Dark Mode Visibility Overrides */
+.react-flow__controls {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: calc(var(--radius) - 4px) !important;
+  padding: 4px !important;
+  box-shadow: var(--shadow-md) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+
+.react-flow__controls-button {
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: calc(var(--radius) - 8px) !important;
+  color: var(--foreground) !important;
+  fill: var(--foreground) !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 32px !important;
+  width: 32px !important;
+  cursor: pointer !important;
+}
+
+.react-flow__controls-button:hover {
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+
+.react-flow__controls-button svg {
+  width: 14px !important;
+  height: 14px !important;
+  fill: currentColor !important;
+}
+
+.react-flow__minimap {
+  background-color: var(--card) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: calc(var(--radius) - 4px) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden !important;
+}
+
+.react-flow__minimap-mask {
+  fill: var(--muted) !important;
+  opacity: 0.4 !important;
+}
+
+.react-flow__minimap-node {
+  fill: var(--primary) !important;
+  opacity: 0.3 !important;
+  stroke: var(--primary) !important;
+}
