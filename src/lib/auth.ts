@@ -32,6 +32,13 @@ export const auth = betterAuth({
             },
         },
     },
+    account: {
+        accountLinking: {
+            enabled: true,
+            trustedProviders: ["google", "github"],
+            requireLocalEmailVerified: false,
+        },
+    },
     baseURL:
         process.env.BETTER_AUTH_URL ||
         (process.env.VERCEL_PROJECT_PRODUCTION_URL
