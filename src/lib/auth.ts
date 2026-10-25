@@ -32,23 +32,30 @@ export const auth = betterAuth({
             },
         },
     },
+    secret: process.env.BETTER_AUTH_SECRET || "0o3XH08W8xkKA6lphQWbQ3SgHzipKU4u",
     account: {
         accountLinking: {
             enabled: true,
             trustedProviders: ["google", "github"],
             requireLocalEmailVerified: false,
         },
+        skipStateCookieCheck: true,
+        storeStateStrategy: "database",
     },
     baseURL:
-        process.env.BETTER_AUTH_URL ||
-        (process.env.VERCEL_PROJECT_PRODUCTION_URL
-            ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-            : process.env.VERCEL_URL
-            ? `https://${process.env.VERCEL_URL}`
-            : undefined),
+        process.env.NODE_ENV === "production"
+            ? (process.env.BETTER_AUTH_URL && !process.env.BETTER_AUTH_URL.includes("localhost")
+                ? process.env.BETTER_AUTH_URL
+                : process.env.VERCEL_PROJECT_PRODUCTION_URL
+                ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+                : process.env.VERCEL_URL
+                ? `https://${process.env.VERCEL_URL}`
+                : "https://nexus-flows-pi.vercel.app")
+            : (process.env.BETTER_AUTH_URL || "http://localhost:3000"),
     advanced: {
         disableCSRFCheck: true,
         disableOriginCheck: true,
+        useSecureCookies: process.env.NODE_ENV === "production",
     },
     trustedOrigins: async (request) => {
         const origin = request?.headers.get("origin");
