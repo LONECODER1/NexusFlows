@@ -1,0 +1,1 @@
+{"url":"https://github.com/login/oauth/authorize?response_type=code&client_id=Ov23lilUGE7LvxZwT7KE&state=Ld4KI6ajij0jj7QmQOuE-j3pCpGGyfCO&scope=read%3Auser+user%3Aemail&redirect_uri=https%3A%2F%2Fnexus-flows-pi.vercel.app%2Fapi%2Fauth%2Fcallback%2Fgithub&code_challenge_method=S256&code_challenge=McUg66hWJXhckBTOEHKkzlujnAnP_mg_euFGHnSXEGI","redirect":true}
