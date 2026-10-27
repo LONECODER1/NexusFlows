@@ -32,7 +32,7 @@ export const auth = betterAuth({
             },
         },
     },
-    secret: process.env.BETTER_AUTH_SECRET || "0o3XH08W8xkKA6lphQWbQ3SgHzipKU4u",
+    secret: process.env.BETTER_AUTH_SECRET,
     account: {
         accountLinking: {
             enabled: true,

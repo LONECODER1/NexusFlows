@@ -484,7 +484,8 @@ flowchart TB
 
 ## 17. Suggested 2-minute interview pitch
 
-> “NexusFlows is a workflow automation product built on Next.js and PostgreSQL. Users edit a visual DAG in React Flow; we persist nodes and edges in Postgres. When a workflow runs—manually, on a schedule, or via webhooks—we enqueue an Inngest event. A single orchestrator function topologically sorts the graph, runs a typed executor per node, and passes a JSON context forward. Branching nodes set a branch outcome and we skip downstream paths on losing edges. Side effects like LLM calls run inside Inngest steps for durability, and we push live status to the UI with Inngest Realtime. Credentials are encrypted at rest, auth is Better Auth, and premium features are gated with Polar subscriptions after a trial.”
+> “NexusFlows is a workflow automation product built on Next.js and PostgreSQL. Users edit a visual DAG in React F
+low; we persist nodes and edges in Postgres. When a workflow runs—manually, on a schedule, or via webhooks—we enqueue an Inngest event. A single orchestrator function topologically sorts the graph, runs a typed executor per node, and passes a JSON context forward. Branching nodes set a branch outcome and we skip downstream paths on losing edges. Side effects like LLM calls run inside Inngest steps for durability, and we push live status to the UI with Inngest Realtime. Credentials are encrypted at rest, auth is Better Auth, and premium features are gated with Polar subscriptions after a trial.”
 
 ---
 

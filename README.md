@@ -11,7 +11,9 @@ Use this README for setup and day-to-day development. For system design and inte
 - [Why this project exists](#why-this-project-exists)
 - [High-level capabilities](#high-level-capabilities)
 - [Tech stack](#tech-stack)
-- [Architecture at a glance](#architecture-at-a-glance)
+- [Architecture at a glance](#architecture-a
+
+t-a-glance)
 - [Workflow execution model](#workflow-execution-model)
 - [Supported node types](#supported-node-types)
 - [Project structure](#project-structure)

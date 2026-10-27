@@ -93,7 +93,7 @@ export const groqExecutor: NodeExecutor<GroqData> = async ({
       "groq-generate-text",
       generateText,
       {
-        model: groq("llama-3.3-70b-versatile"),
+        model: groq("openai/gpt-oss-120b"),
         system: systemPrompt,
         prompt: userPrompt,
         experimental_telemetry: {
@@ -122,13 +122,23 @@ export const groqExecutor: NodeExecutor<GroqData> = async ({
         text,
       },
     };
-  } catch (error) {
-     await publish(
+  } catch (error: any) {
+    await publish(
       groqChannel().status({
         nodeId,
         status: "error",
       }),
     );
+    const msg = error?.message || "";
+    if (
+      msg.includes("does not exist") ||
+      msg.includes("model_not_found") ||
+      msg.includes("401") ||
+      msg.includes("400") ||
+      msg.includes("404")
+    ) {
+      throw new NonRetriableError(`Groq node error: ${msg}`);
+    }
     throw error;
   }
 };
